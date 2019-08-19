@@ -6,9 +6,10 @@ echo "       Starting UBIN Quorum API Layer";
 echo "###############################################"
 
 NETWORK_CONFIG_PATH='/server/config/network.json'
-API_PATH='/home/azureuser/ubin-quorum'
-HOME_DIR='/home/azureuser/ubin-quorum'
-USER='azureuser'
+
+API_PATH='/home/ubuntu/Ubin-quorum-rebuild'
+HOME_DIR='/home/ubuntu/Ubin-quorum-rebuild'
+USER='ubuntu'
 
 if hash jq 2>/dev/null; then
     echo "JQ installed.. Proceeding...";
@@ -23,19 +24,19 @@ jq -c '.[] | { host, stashName}' server/config/network.json | while read i; do
     HOST=`echo $i | jq -r .host`
     STASHNAME=`echo $i | jq -r .stashName`
     echo "Copying contract to $HOST ..."
-    ssh -n $USER@$HOST "sudo rm -r $HOME_DIR/build/contracts/*json"
-    ssh -n $USER@$HOST "cd $HOME_DIR && sudo mkdir -p build/contracts && sudo chmod -R 777 build"
+    ssh -n $USER@$HOST "rm -r $HOME_DIR/build/contracts/*json"
+    ssh -n $USER@$HOST "cd $HOME_DIR && mkdir -p build/contracts && chmod -R 777 build"
     scp -r build/contracts/*.json $USER@$HOST:$HOME_DIR/build/contracts
     
     echo "Copying network config to $HOST ..."
-    ssh -n $USER@$HOST "sudo rm -r $HOME_DIR/server/config/network.json"
+    ssh -n $USER@$HOST "rm -r $HOME_DIR/server/config/network.json"
     scp -r server/config/network.json $USER@$HOST:$HOME_DIR/server/config/
 
     echo "Starting API Server for $STASHNAME ..."
     ssh -n $USER@$HOST bash -c "'
         pkill -9 node
         cd $API_PATH
-        nohup npm start $STASHNAME > ~/api.log &
+        nohup npm start $STASHNAME > $API_PATH/api.log &
     '"
 
     echo "API Server for $STASHNAME is running"
