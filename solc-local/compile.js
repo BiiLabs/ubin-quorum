@@ -17,6 +17,3 @@ var outfile = {
 
 fs.writeFile('sgdz_compiled', JSON.stringify(outfile),
              err => { if(err) console.log(err); });
-
-// fs.writeFile('deploy_sgdz', JSON.stringify(outfile),
-//              err => { if(err) console.log(err); });
