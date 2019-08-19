@@ -1,4 +1,5 @@
-/* pragma solidity ^0.4.11; */
+pragma solidity ^0.4.11;
+
 import "./Owned.sol";
 import "./ZSLPrecompile.sol";
 
@@ -45,18 +46,18 @@ contract SGDz is Owned { // to be deployed by MAS
     }
   }
 
-  function getAmountHash(bytes32 _pmtRef) constant returns (bytes32) {
+  function getAmountHash(bytes32 _pmtRef) public constant returns (bytes32) {
     return shieldedPayments[_pmtRef].amountHash;
   }
 
   address[] participants; // participants of current netting round
 
-  function lineUp() {
+  function lineUp() public {
     participants.push(msg.sender);
   }
 
 
-  function getParticipants() constant returns (address[]) {
+  function getParticipants() public constant returns (address[]) {
     return participants;
   }
 
@@ -69,27 +70,29 @@ contract SGDz is Owned { // to be deployed by MAS
     _;
   }
 
-  function SGDz() {
+  function SGDz() public {
     zsl_address = new ZSLPrecompile();
     zsl = ZSLPrecompile(zsl_address);
   }
 
-  function setShieldedBalance(address _owner, bytes32 _shieldedBalance) onlyOwner {
+  function setShieldedBalance(address _owner, bytes32 _shieldedBalance) public onlyOwner {
     shieldedBalances[_owner] = _shieldedBalance;
   }
 
-  function paymentIsValidated(bytes32 _pmtRef) returns (bool) {
+  function paymentIsValidated(bytes32 _pmtRef) public view returns (bool) {
     return shieldedPayments[_pmtRef].processed;
   }
 
 
   // called right after a payment is submitted to payment agent
   event AmountHash(bytes32 pmtRef, bytes32 amountHash, address sender, address receiver);
-  function submitShieldedPayment(bytes32 _pmtRef, address _receiver, bytes32 _amountHash, bool gridlocked) {
+  function submitShieldedPayment(bytes32 _pmtRef, address _receiver, bytes32 _amountHash, bool gridlocked) public {
     shieldedPayments[_pmtRef].sender = msg.sender;
     shieldedPayments[_pmtRef].receiver = _receiver;
     shieldedPayments[_pmtRef].amountHash = _amountHash;
-    if (!gridlocked) AmountHash(_pmtRef, _amountHash, msg.sender, _receiver);
+    if (!gridlocked) {
+      AmountHash(_pmtRef, _amountHash, msg.sender, _receiver);
+    }
   }
 
   // called right before a balance update in z contract
@@ -103,6 +106,7 @@ contract SGDz is Owned { // to be deployed by MAS
                           bytes32 _startBalanceHash,
                           bytes32 _endBalanceHash,
                           bool _batched)
+    public
     notProcessed(_pmtRef)
   {
     // verify proof
@@ -135,8 +139,8 @@ contract SGDz is Owned { // to be deployed by MAS
   }
 
   function enqueueProposal(bytes32 _pmtRef) internal {
-    // check chaining condition
-    bytes32[] qIdx = proposalQueue[tx.origin].qIdx;
+    bytes32[] storage qIdx = proposalQueue[tx.origin].qIdx;
+
     if (qIdx.length == 0) { // proposal queue is empty
       require(shieldedBalances[tx.origin] == getProposal(_pmtRef, tx.origin).startBalanceHash);
     } else {
@@ -154,7 +158,7 @@ contract SGDz is Owned { // to be deployed by MAS
   }
 
   /* called after all netting proof submitted */
-  function batchedProofFinished() {
+  function batchedProofFinished() public {
     done[msg.sender] = true;
     bool batchedProposalCompleted = true;
     for (uint i = 0; i < participants.length; i++) {
@@ -170,28 +174,30 @@ contract SGDz is Owned { // to be deployed by MAS
   }
 
   function proofNotExpired(bytes32 _pmtRef) internal constant returns (bool) {
-    ShieldedPayment spmt = shieldedPayments[_pmtRef];
+    ShieldedPayment memory spmt = shieldedPayments[_pmtRef];
     if (spmt.receiverProposal.startBalanceHash != shieldedBalances[spmt.receiver]) return false;
     if (spmt.senderProposal.startBalanceHash != shieldedBalances[spmt.sender]) return false;
     return true;
   }
 
-  function proofCompleted(bytes32 _pmtRef) constant returns (bool) {
+  function proofCompleted(bytes32 _pmtRef) public constant returns (bool) {
     return shieldedPayments[_pmtRef].receiverProposal.validated && shieldedPayments[_pmtRef].senderProposal.validated;
   }
 
   // for netting and batch processing; called before settle() in PaymentAgent
-  function verifyBatchedProposal() {
+  function verifyBatchedProposal() public {
     for (uint i = 0; i < participants.length; i++) {
-      bytes32[] qIdx = proposalQueue[participants[i]].qIdx;
+      bytes32[] storage qIdx = proposalQueue[participants[i]].qIdx;
+
       for (uint j = 0; j < qIdx.length; j++) {
-        if (!proofCompleted(qIdx[j])) throw;
+        if (!proofCompleted(qIdx[j])) revert();
         shieldedPayments[qIdx[j]].processed = true;
       }
     }
     // Now all proof chains are verified; update shielded balance to what's proposed
     for (uint k = 0; k < participants.length; k++) {
-      ProposalQueue q = proposalQueue[participants[k]];
+      //ProposalQueue q = proposalQueue[participants[k]]; // Warning: Variable is declared as a storage pointer.
+      ProposalQueue storage q = proposalQueue[participants[k]];
       bytes32 finalProposalId = q.qIdx[q.qIdx.length-1];
       address p_ = participants[k];
       shieldedBalances[p_] = getProposal(finalProposalId, p_).endBalanceHash;
@@ -213,21 +219,4 @@ contract SGDz is Owned { // to be deployed by MAS
   function debugVerifyABC(bytes proof, bytes32 h1, bytes32 h2, bytes32 h3) constant external returns (bool) {
     return zsl.verifyABC(proof, h1, h2, h3);
   }
-
-  function assert(bool assertion) internal {
-    if (!assertion) {
-      throw;
-    }
-  }
-
-  function require(bool requirement) internal {
-    if (!requirement) {
-      throw;
-    }
-  }
-
-  function revert() internal {
-    throw;
-  }
-
 }
