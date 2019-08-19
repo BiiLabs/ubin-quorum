@@ -1,5 +1,4 @@
 # Project Ubin Phase 2 - Quorum
-
 This repository contains the source code and test scripts for the Quorum prototype in Project Ubin Phase 2.
 
 Ubin Phase 2 is a collaborative design and rapid prototyping project, exploring the use of Distributed Ledger Technologies (DLT) for Real-Time Gross Settlement. 
@@ -10,7 +9,7 @@ The Quorum smart contract code is written in Solidity and the API layer is writt
 
 Additional notes:
 * An external service (mock RTGS service) is to be deployed for Pledge and Redeem functions. It can be found in the [`ubin-ext-service`](https://github.com/project-ubin/ubin-ext-service)
-* A common UI can be found in the [`ubin-ui`](https://github.com/project-ubin/ubin-ui) repository. 
+* A common UI can be found in the [`ubin-ui`](https://github.com/project-ubin/ubin-ui) repository.
 
 # Quorum Network Setup
 
@@ -18,16 +17,58 @@ Additional notes:
 
 1\.	Provision 14 Ubuntu (Xenial - LTS 16.04) VMs (11 banks, 1 MAS central bank, 1 MAS Regulatory Node, 1 deployment, 16GB, 2 cores)
 
-2\.	A static IP address has to be configured for all the VMs
+**You must ensure the OS version is Ubuntu 16.04 LTS**
+```sh
+$ lsb_release -a
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 16.04.3 LTS
+Release:        16.04
+Codename:       xenial
+```
 
-3\. Node v8.x.x is installed for all the VMs
+2\. Node v8.x.x is installed for all the VMs
+```sh
+$ curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+$ sudo apt install -y nodejs
+```
 
-4\. Npm v5.x.x is installed for all the VMs
+3\. Npm v5.x.x is installed for all the VMs
+npm version 5 should already be installed by above step.
+```sh
+$ npm -v
+5.6.0
+```
 
-5\. Java 8 installed in Central Bank VM
+4\. Java 8 installed in Central Bank VM
+```sh
+$ sudo apt install software-properties-common python-software-properties
+```
+Add the PPA:
+```sh
+$ sudo add-apt-repository ppa:webupd8team/java
+```
+Run commands to update system package index and install Java installer script:
+```sh
+$ sudo apt update; sudo apt install oracle-java8-installer
+```
+Check the Java version after installing the package, run command:
+```sh
+$ javac -version
+javac 1.8.0_171
+$ java -version
+java version "1.8.0_171"
+Java(TM) SE Runtime Environment (build 1.8.0_171-b11)
+Java HotSpot(TM) 64-Bit Server VM (build 25.171-b11, mixed mode)
+```
+
+5\.	Screen is installed
+screen allows you to keep screen active while switching between your command line programs.
+```sh
+$ sudo apt install screen
+```
 
 6\.	Confirm these ports are opened in the firewall rules
-
 ```
 raft-http                           TCP 40000
 geth-communicationNode              TCP 50000
@@ -37,14 +78,19 @@ constellation-network               TCP 9000
 rpc                                 TCP 20010
 API                                 TCP 3000
 ```
+You can check out with ['ufw'](https://wiki.ubuntu.com/UncomplicatedFirewall)
 
 
 7\. SSH into the VM
 Tip: Merge your pub key into the ~/.ssh/authorized_keys for seamless login
+FYI: https://blog.gtwang.org/linux/linux-ssh-public-key-authentication/
 
 8\. Clone the installation setups/binaries from git repo 
-https://github.com/project-ubin/ubin-quorum-setup.git, your directory structure should look like below
-
+https://github.com/project-ubin/ubin-quorum-setup.git, 
+```sh
+$ git clone https://github.com/project-ubin/ubin-quorum-setup.git
+```
+your directory structure should look like this
 ```sh
 $ cd ~/ubin-quorum-setup
 $ ls
@@ -75,11 +121,15 @@ constellation	geth
 quorum-genesis	QuorumNetworkManager
 setup         	
 ```
+It is recommended to **backup your VM** as regular snapshots before each subsequent sections. 
 
 ## B. Configure Quorum nodes using Quorum Network Manager (QNM)
+
 Preparation for setting up new Quorum Raft network:
 
 The VM setup for this document assumes VM nx01 is the Coordinator node and MAS Regulator node.
+
+You can follow the ubin VMs IP config [here](https://hackmd.io/JuKjj8ZCRj-8JIU8_QieYw?view).
 
 ### 1.	Pre-requisites to be executed on all the nodes 
 ```sh
@@ -96,10 +146,12 @@ $ screen -r
 $ screen node index.js
 
 ```
+Do note that usage of "screen" is not mandatory. The alternative is to open more ssh sessions.
 
 ### 2.	Configure coordinating node
 1\. Identify the coordinator node, this is the node that all the participating nodes will join. This is the MAS Regulator node for Project Ubin - in this guide it will be named " nx01".
 
+Example 1:
 ```sh
 # Quorum Network Manager open, proceed only if ip address available.
 # Type in the server name for the nodeName in the four character, this is only used for reference
@@ -107,6 +159,12 @@ $ screen node index.js
 prompt: localIpAddress: (1.2.3.4)
 prompt: nodeName: nx01
 ```
+Example 2:
+```sh
+prompt: localIpAddress: (210.240.162.43) 192.168.56.3
+prompt: nodeName: nx01
+```
+
 
 2\. Close any running instances of geth and constellation by selecting option 5.
 
@@ -131,7 +189,7 @@ Please select an option:
 prompt: option: 1
 ```
 
-4\. Copy the IP address (this will be used when we configure the non-coordinating node)
+4\. Copy the IP address (this will be used when we configure the other non-coordinating nodes)
 Select 1, "Start a node as the setup coordinator"
 
 ```sh
@@ -157,8 +215,11 @@ Please select an option below:
 prompt: option: 1
 ```
 
-6\. Select 1, "Clear all files..."
- 
+6\. Select 1, "Clear all files..." or "Keep old files..."
+
+Please note that if this is the first time you are setting up, or if you want to erase previous and re-do the setup, you should select "Clear all files".
+If you are re-running from previous setup, you MUST select **"Keep old files"**. Failing this will result in all your nodes configuration information being erased!
+
 ```sh
 Please select an option below:
 1) Clear all files/configuration and start from scratch[WARNING: this clears everything]
@@ -176,19 +237,45 @@ prompt: done:
 
 7\. A message will appear that it is waiting for new nodes to join; at this point, participating nodes can join in. Go to Section 3 (Steps for Participating nodes (non-coordinator)) and execute the steps for each node you want to add. Return to this section and continue with the next step once you have finished adding all the new nodes.
 
-*** Only do the next step once all the nodes have joined in ***
+***Only do the next step once all the nodes have joined in***
 
-8\. Once all nodes have joined, press Enter to create the network config files.
+8\. Once all nodes have joined, press any key and then Enter to create the network config files.
 Wait until all nodes have responded then press Ctrl+A+D to detach from the screen.
+This example only shows a network with only 3 nodes joining (including coordinating node):
+```sh
+prompt: done:  nx02 has joined the network
+nx03 has joined the network
+<any key> and <enter>
+Adding the following addresses to the genesis block: [ '0x6398dd29d801211d2492e9b6062c33b8aac74599',
+  '0x000000000000000000000000000000005a534c01',
+  '0x000000000000000000000000000000005a534c02',
+  '0x000000000000000000000000000000005a534c03',
+  '0x000000000000000000000000000000005a534c04',
+  '0x000000000000000000000000000000005a534c05',
+  '0x4a96d31bfe8d4e797ba60cb9994fb18220354263',
+  '0x49c40d934caf14114210161ab4bd6d59d12b53e3' ]
+[*] Creating genesis config...
+[*] Starting raft node...
+[*] RPC connection established, Node started
+[*] Done
+```
 
+9.\ Save a copy of network configuration file (`networkNodeInfo.json`) immediately after the above step 8. This file is updated by step 8 and is found in QuorumNetworkManager directory. It will be used for the Deployment section later.
 
 ### 3. Steps for Participating nodes (non-coordinator)
 Ensure Section 1: Pre-requisites are executed
+For each participating (non-coordinator) node, perform below steps:
 
 1\.	Give the node a name (e.g. "nx02"), this name has to be unique.
 
+Example 1:
 ```sh
 prompt: localIpAddress: (1.2.3.5)
+prompt: nodeName: nx02
+```
+Example 2:
+```sh
+prompt: localIpAddress: (210.240.162.43) 192.168.56.4
 prompt: nodeName: nx02
 ```
 
@@ -219,7 +306,10 @@ Please select an option below:
 prompt: option: 2
 ```
 
-4\.	Select 1, "Clear all files..."
+4\.	Select 1, "Clear all files..." or "Keep old files..."
+
+Again, please note that if this is the first time you are setting up, or if you want to erase previous and re-do the setup, you should select "Clear all files".
+If you are re-running from previous setup, you MUST select **"Keep old files"**. Failing this will result in all your nodes configuration information being erased!
 
 ```sh
 Please select an option below:
@@ -230,9 +320,14 @@ prompt: option: 1
 
 5\.	Enter the IP address of the coordinating node.
 
+Example 1:
 ```sh
 In order to join the network, please enter the ip address of the coordinating node
 prompt: ipAddress: 1.2.3.4
+```
+Example 2:
+```sh
+prompt: ipAddress: 192.168.56.3
 ```
 
 6\.	After a short moment, a message should appear that the node has joined.
@@ -281,24 +376,58 @@ at block: 3656 (Fri, 11 Feb 47846936856 07:04:31 UTC)
 
 9\. When all nodes have been added, return to Section 2, Step 8 to complete the network setup from the coordinator VM.
 
-
-Once the coordinator steps have been completed and you have detacted from screen (Ctrl+A+D) in each of the VMs, the Raft Quorum network setup is complete.
+If you are using "screen" - Once the coordinator steps have been completed and you have detacted from screen (Ctrl+A+D) in each of the VMs, the Raft Quorum network setup is complete.
 
 
 # C. Contract Deployment
 The VM setup for this document assumes the following:
+
 VM nx01 – Coordinator node and MAS Regulator node
+
 VM nx11 – Deployment node where smart contracts will be deployed from
 
-If a new Quorum network has been setup by executing the steps from section B, make sure to run through steps 1 & 2, otherwise skip to step 3.
+## Pre-requisites for Deployment node
+SSH to Deployment node to do git clone:
+```sh
+$ git clone https://github.com/BiiLabs/ubin-quorum.git
+```
 
-1\. Copy the network configuration (`networkNodeInfo.js`) from the coordinator node’s QuorumNetworkManager directory to the deployment node’s `ubin-quorum` directory.
+Install truffle
+```sh
+$ sudo npm install -g truffle@4.1.15
+```
+
+From ubin-quorum directory where package.json is found, run “npm install” so that required js modules can be resolved when deploy.sh executes js programs later.
+```sh
+$ cd ~/ubin-quorum/
+$ npm install
+```
+
+If a new Quorum network has been setup by executing the steps from section B, make sure to run through steps 1 & 2 below, otherwise skip to step 3.
+
+1\. Copy the network configuration (`networkNodeInfo.json`) from the coordinator node’s QuorumNetworkManager directory to the deployment node’s `ubin-quorum` directory.
 
 2\.	Generate the Quorum configuration (from deployment node)
+
+convertConfig.js generates various config files, including truffle.js used by truffle.
 
 ```sh
 $ cd ~/ubin-quorum/
 $ node convertConfig.js
+```
+
+After executing above, update the "mas:" settings in truffle.js file with the "from:" account address. This address should be the coinbase address from node 1 (nx01).
+
+Example:
+```sh
+    mas: {
+      nodeId: 1,
+      host: "192.168.56.3",
+      port: 20010,
+      network_id: "*",
+      from: "0x7ce0c1d9ad848a781af2ed613b2d8db6c9178673", // nx01's coinbase, you have to change it to your own addrees.
+      gas: 200000000
+    },
 ```
 
 3\.	Deploy contracts to the network.
@@ -346,13 +475,13 @@ $ ./initStash.sh 10 2000 3000 4000 5000 6000 7000 8000 9000 1000 1200 1400 1500
 2\. Clone the git repo for the DApp to each bank VM and the deployment node. You may need to provide your credentials.
 
 ```sh
-$ git clone https://github.com/project-ubin/ubin-quorum.git
+$ git clone https://github.com/BiiLabs/ubin-quorum.git
 ```
 
 3\.	Go into the newly created directory on each server.
 
 ```sh
-$ cd ubin-quorum
+$ cd ~/ubin-quorum/
 ```
 
 4\.	Install dependencies
