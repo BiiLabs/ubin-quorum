@@ -504,7 +504,7 @@ $ ./start-api.sh
 2\.	In each VM running an API server, check the log file to make sure there are no errors
 
 ```sh
-$ cd ~
+$ cd ~/ubin-quorum
 $ cat api.log # Outputs the contents of the log file
 $ tail -100f api.log  # Alternatively, run this to see live logging
 ```
