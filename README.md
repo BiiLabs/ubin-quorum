@@ -540,19 +540,20 @@ $ ./gradlew build
 ### Start External Service
 1\. Update the `application.properties` file 
 ```sh
-ubin-ext-service/application.properties
+$ cd ~/ubin-ext-service
+$ vim application.properties
 ```
 With Quorum configurations:
 
 ```sh
-PledgeURI=http://quorumnx02.southeastasia.cloudapp.azure.com:9001/api/fund/pledge
-RedeemURI=http://quorumnx02.southeastasia.cloudapp.azure.com:9001/api/fund/redeem 
-Dlt=Quorum  
+PledgeURI=http://192.168.56.4:9001/api/fund/pledge
+RedeemURI=http://192.168.56.4:9001/api/fund/redeem
+Dlt=Quorum 
 ```
 
 Note:
 
-- `quorumnx02.southeastasia.cloudapp.azure.com` is the Central Bank domain name in the current network.
+- `192.168.56.4` is the Central Bank domain name in the current network.
 
 2\. Copy built JAR artifact and properties files to the Central Bank VM
 ```shM
