@@ -41,25 +41,21 @@ $ npm -v
 ```
 
 4\. Java 8 installed in Central Bank VM
+Run commands to update system package index and install OpenJDK:
 ```sh
-$ sudo apt install software-properties-common python-software-properties
-```
-Add the PPA:
-```sh
-$ sudo add-apt-repository ppa:webupd8team/java
-```
-Run commands to update system package index and install Java installer script:
-```sh
-$ sudo apt update; sudo apt install oracle-java8-installer
+$ sudo apt update
+$ sudo apt install -y default-jre
+$ sudo apt install -y default-jdk
 ```
 Check the Java version after installing the package, run command:
 ```sh
 $ javac -version
-javac 1.8.0_171
+javac 1.8.0_222
+
 $ java -version
-java version "1.8.0_171"
-Java(TM) SE Runtime Environment (build 1.8.0_171-b11)
-Java HotSpot(TM) 64-Bit Server VM (build 25.171-b11, mixed mode)
+jopenjdk version "1.8.0_222"
+OpenJDK Runtime Environment (build 1.8.0_222-8u222-b10-1ubuntu1~16.04.1-b10)
+OpenJDK 64-Bit Server VM (build 25.222-b10, mixed mode)
 ```
 
 5\.	Screen is installed
