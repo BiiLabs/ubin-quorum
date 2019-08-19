@@ -7,8 +7,8 @@ echo "###############################################"
 
 NETWORK_CONFIG_PATH='/server/config/network.json'
 
-API_PATH='/home/ubuntu/Ubin-quorum-rebuild'
-HOME_DIR='/home/ubuntu/Ubin-quorum-rebuild'
+API_PATH='/home/ubuntu/ubin-quorum'
+HOME_DIR='/home/ubuntu/ubin-quorum'
 USER='ubuntu'
 
 if hash jq 2>/dev/null; then
