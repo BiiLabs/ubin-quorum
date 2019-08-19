@@ -1,0 +1,1 @@
+[{"constant":true,"inputs":[{"name":"","type":"bytes"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32"},{"name":"","type":"uint64"}],"name":"run","outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"}]
