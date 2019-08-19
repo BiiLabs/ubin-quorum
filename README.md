@@ -83,6 +83,7 @@ You can check out with ['ufw'](https://wiki.ubuntu.com/UncomplicatedFirewall)
 
 7\. SSH into the VM
 Tip: Merge your pub key into the ~/.ssh/authorized_keys for seamless login
+
 FYI: https://blog.gtwang.org/linux/linux-ssh-public-key-authentication/
 
 8\. Clone the installation setups/binaries from git repo 
