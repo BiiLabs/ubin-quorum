@@ -23,6 +23,9 @@ echo "###############################################"
 jq -c '.[] | { host, stashName}' server/config/network.json | while read i; do
     HOST=`echo $i | jq -r .host`
     STASHNAME=`echo $i | jq -r .stashName`
+    echo "Stop the API Server ..."
+    ssh -n $USER@$HOST "pkill -9 node"
+
     echo "Copying contract to $HOST ..."
     ssh -n $USER@$HOST "rm -r $HOME_DIR/build/contracts/*json"
     ssh -n $USER@$HOST "cd $HOME_DIR && mkdir -p build/contracts && chmod -R 777 build"
