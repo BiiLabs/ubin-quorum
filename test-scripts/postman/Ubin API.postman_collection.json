@@ -1,8 +1,7 @@
 {
 	"info": {
-		"name": "Quorum-11vm",
-		"_postman_id": "f7b23f20-fade-3787-537d-8c0e9c9cd4cb",
-		"description": "",
+		"_postman_id": "0afa9bf9-f0d6-4409-a034-b7c13ce15725",
+		"name": "Ubin API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -76,10 +75,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"bic\": \"CSFBSGSX\"\n}"
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/status/{{bic}}",
 					"protocol": "http",
@@ -107,10 +102,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/queue/out",
 					"protocol": "http",
@@ -132,10 +123,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/queue/in",
 					"protocol": "http",
@@ -343,10 +330,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"redeemer\": \"SCBLSGSG\",\n\t\t\"transactionAmount\":10\n}"
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/balance/all",
 					"protocol": "http",
@@ -404,10 +387,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"redeemer\": \"SCBLSGSG\",\n\t\t\"transactionAmount\":10\n}"
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/info",
 					"protocol": "http",
@@ -429,10 +408,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/transactions",
 					"protocol": "http",
@@ -455,10 +430,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/netting/status",
 					"protocol": "http",
@@ -485,10 +456,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"redeemer\": \"SCBLSGSG\",\n\t\t\"transactionAmount\":10\n}"
-				},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/info",
 					"protocol": "http",
@@ -510,7 +477,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {},
 				"url": {
 					"raw": "http://{{hostname}}:{{port}}/api/bank/counterparties",
 					"protocol": "http",
@@ -523,10 +489,31 @@
 						"bank",
 						"counterparties"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "499bdc61-afcb-4fac-b93f-01142f6b1b5f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9241be7d-c468-4d53-ae56-56b4f829c14a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }

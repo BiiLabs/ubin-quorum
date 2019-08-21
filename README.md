@@ -120,11 +120,6 @@ setup
 ```
 It is recommended to **backup your VM** as regular snapshots before each subsequent sections. 
 
-# Test Scripts
-
-[Postman](https://www.getpostman.com/) is the main testing tool used for this prototype. The Postman collection and environments are located in the [tests](tests/postman) folder in this repository. The API definitions can be found in the [Technical Report repository](https://github.com/project-ubin/ubin-docs/blob/master/api/UbinPhase2-QuorumAPI.pdf).
-
-
 # License 
  
 Copyright 2017 The Association of Banks in Singapore

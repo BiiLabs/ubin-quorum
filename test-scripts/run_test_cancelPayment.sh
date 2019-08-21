@@ -1,10 +1,17 @@
 #!/bin/bash
+
 echo "[*] initializing states and initial funds..."
 truffle exec --network mas wipeout.js
 truffle exec --network mas createStashesDyn.js
 truffle exec --network mas setBalance.js 1 100
 truffle exec --network mas setBalance.js 2 200
 truffle exec --network mas setBalance.js 3 300
+
+echo "[*] starting balances:"
+truffle exec --network mas getStashes.js
+truffle exec --network a getStashes.js
+truffle exec --network b getStashes.js
+
 echo "[*] submitting payment for regression testing"
 truffle exec --network a createTrx.js 2 20 0 0 R0000001
 
